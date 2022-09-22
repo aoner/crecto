@@ -18,9 +18,7 @@ describe Crecto do
         u.unique_field = "123"
         changeset = Repo.insert(u)
         changeset.errors.empty?.should be_false
-        if Repo.config.adapter == Crecto::Adapters::Postgres
-          changeset.errors[0].should eq({:field => "unique_field", :message => "duplicate key value violates unique constraint \"users_unique_field_key\""})
-        elsif Repo.config.adapter == Crecto::Adapters::Mysql
+        if Repo.config.adapter == Crecto::Adapters::Mysql
           changeset.errors[0].should eq({:field => "unique_field", :message => "Duplicate entry '123' for key 'unique_field'"})
         elsif Repo.config.adapter == Crecto::Adapters::SQLite3
           changeset.errors[0].should eq({:field => "unique_field", :message => "UNIQUE constraint failed: users.unique_field"})
@@ -44,9 +42,7 @@ describe Crecto do
         u.unique_field = "123"
         changeset = Repo.update(u)
         changeset.errors.empty?.should be_false
-        if Repo.config.adapter == Crecto::Adapters::Postgres
-          changeset.errors[0].should eq({:field => "unique_field", :message => "duplicate key value violates unique constraint \"users_unique_field_key\""})
-        elsif Repo.config.adapter == Crecto::Adapters::Mysql
+        if Repo.config.adapter == Crecto::Adapters::Mysql
           changeset.errors[0].should eq({:field => "unique_field", :message => "Duplicate entry '123' for key 'unique_field'"})
         elsif Repo.config.adapter == Crecto::Adapters::SQLite3
           changeset.errors[0].should eq({:field => "unique_field", :message => "UNIQUE constraint failed: users.unique_field"})

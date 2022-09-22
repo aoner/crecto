@@ -17,7 +17,8 @@ describe Crecto do
     describe "#raw_exec" do
       it "should run the exec query directly on the connection" do
         name = Random::Secure.hex(8)
-        x = Repo.config.adapter == Crecto::Adapters::Postgres ? "$1" : "?"
+        # x = Repo.config.adapter == Crecto::Adapters::Postgres ? "$1" : "?"
+        x = "?"
         Repo.raw_exec("INSERT INTO users (name) VALUES (#{x})", name)
         user = Repo.get_by!(User, name: name)
         user.should_not be_nil
@@ -35,11 +36,7 @@ describe Crecto do
         Repo.raw_query("SELECT id, name FROM users") do |rs|
           i = 0
           rs.each do
-            if Repo.config.adapter == Crecto::Adapters::Postgres
-              rs.read(Int64).should be_a(Int64)
-            else
-              rs.read(Int32).should be_a(Int32)
-            end
+            rs.read(Int32).should be_a(Int32)
             rs.read(String).should eq(names[i])
             i += 1
           end
@@ -1009,7 +1006,8 @@ describe Crecto do
       end
 
       it "should raise an error if the changeset is invalid (dangling dependents)" do
-        next unless Repo.config.adapter == Crecto::Adapters::Postgres
+        # next unless Repo.config.adapter == Crecto::Adapters::Postgres
+        next
         u = User.new
         u.name = "fridge"
         u = Repo.insert(u).instance
@@ -1019,9 +1017,9 @@ describe Crecto do
 
         # This actually raises a PQ error (also on #delete)
         # TODO: Wrap this in a changeset error
-        expect_raises(PQ::PQError) do
-          Repo.delete!(u)
-        end
+        # expect_raises(PQ::PQError) do
+        #   Repo.delete!(u)
+        # end
       end
     end
 
@@ -1404,35 +1402,6 @@ describe Crecto do
       end
     end
 
-    if Repo.config.adapter == Crecto::Adapters::Postgres
-      describe "json type" do
-        it "store and retrieve records" do
-          u = UserJson.new
-          u.settings = {one: "stuff", two: 123, three: 130912039123090}
-
-          changeset = Repo.insert(u)
-          id = changeset.instance.id
-
-          query = Query.where("settings @> '{\"one\":\"stuff\"}'")
-          users = Repo.all(UserJson, query)
-
-          users.size.should be > 0
-          user = users[0]
-          user.settings.not_nil!["one"].should eq("stuff")
-          user.settings.not_nil!["two"].should eq(123)
-          user.settings.not_nil!["three"].should eq(130912039123090)
-        end
-
-        describe "#delete_all" do
-          it "should remove all records" do
-            Repo.delete_all(UserJson)
-            users = Repo.all(UserJson)
-            users.size.should eq 0
-          end
-        end
-      end
-    end
-
     # keep this at the end
     describe "#delete_all" do
       it "should delete destroy dependents" do
@@ -1569,51 +1538,6 @@ describe Crecto do
 
         changeset = Repo.delete(user)
         changeset.errors.any?.should eq false
-      end
-    end
-
-    if Repo.config.adapter == Crecto::Adapters::Postgres
-      describe "array types" do
-        it "should insert array types" do
-          u = UserArrays.new
-          u.string_array = ["1", "2", "3"]
-          u.int_array = [1, 2, 3]
-          u.float_array = [3.14, 2.56, 76.43]
-          u.bool_array = [true, false, true, false]
-          u = Repo.insert(u).instance
-
-          u = Repo.get!(UserArrays, u.id)
-          u.string_array.should eq ["1", "2", "3"]
-          u.int_array.should eq [1, 2, 3]
-          u.float_array.should eq [3.14, 2.56, 76.43]
-          u.bool_array.should eq [true, false, true, false]
-        end
-
-        it "should update array types" do
-          u = UserArrays.new
-          u.string_array = ["1", "2", "3"]
-          u = Repo.insert(u).instance
-
-          u.string_array = ["one", "two", "three"]
-          changeset = Repo.update(u)
-          changeset.errors.any?.should be_false
-
-          changeset.instance.string_array.should eq ["one", "two", "three"]
-        end
-
-        it "should query array types" do
-          u = UserArrays.new
-          u.string_array = ["3", "3", "3"]
-          u.int_array = [1, 2, 3]
-          u.float_array = [3.14, 2.56, 76.43]
-          u.bool_array = [true, false, true, false]
-          u = Repo.insert(u).instance
-
-          Repo.all(UserArrays, Query.where("? = ANY(string_array)", "3")).size.should_not be < 1
-          Repo.all(UserArrays, Query.where("? = ALL(string_array)", "3")).size.should_not be < 1
-          Repo.all(UserArrays, Query.where("? = ANY(float_array)", 3.14)).size.should_not be < 1
-          Repo.all(UserArrays, Query.where("? = ANY(bool_array)", true)).size.should_not be < 1
-        end
       end
     end
   end

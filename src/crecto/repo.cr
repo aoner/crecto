@@ -254,8 +254,7 @@ module Crecto
 
         if query.nil?
           changeset.add_error("insert_error", "Insert Failed")
-        elsif config.adapter == Crecto::Adapters::Postgres || (config.adapter == Crecto::Adapters::Mysql && tx.nil?) ||
-              (config.adapter == Crecto::Adapters::SQLite3 && tx.nil?)
+        elsif config.adapter == Crecto::Adapters::SQLite3 || (config.adapter == Crecto::Adapters::Mysql && tx.nil?)
           if query.is_a?(DB::ResultSet)
             new_instance = changeset.instance.class.from_rs(query.as(DB::ResultSet)).first?
             changeset = new_instance.class.changeset(new_instance) if new_instance
@@ -410,8 +409,8 @@ module Crecto
 
       if query.nil?
         changeset.add_error("delete_error", "Delete Failed")
-      elsif tx.nil? && config.adapter == Crecto::Adapters::Postgres # patch for bug in crystal-pg
-        query.as(DB::ResultSet).close
+      # elsif tx.nil? && config.adapter == Crecto::Adapters::Postgres # patch for bug in crystal-pg
+      #   query.as(DB::ResultSet).close
       end
 
       changeset.action = :delete
@@ -463,9 +462,9 @@ module Crecto
       query = Query.new if query.nil?
       check_dependents(queryable, query, tx)
       result = config.adapter.run(tx || config.get_connection, :delete_all, queryable, query)
-      if tx.nil? && config.adapter == Crecto::Adapters::Postgres
-        result.as(DB::ResultSet).close if result.is_a?(DB::ResultSet)
-      end
+      # if tx.nil? && config.adapter == Crecto::Adapters::Postgres
+      #   result.as(DB::ResultSet).close if result.is_a?(DB::ResultSet)
+      # end
     end
 
     def delete_all(queryable, query = Query.new)

@@ -1,25 +1,6 @@
 require "./spec_helper"
 require "./helper_methods"
 
-module PgRepoTest
-  extend Crecto::Repo
-
-  config do |conf|
-    conf.adapter = Crecto::Adapters::Postgres
-    conf.database = "crecto"
-    conf.username = "fred"
-    conf.password = "123"
-    conf.hostname = "localhost"
-    conf.initial_pool_size = 2
-    conf.max_pool_size = 100
-    conf.max_idle_pool_size = 2
-    conf.checkout_timeout = 4.5
-    conf.retry_attempts = 2
-    conf.retry_delay = 0.5
-    conf.port = 9999
-  end
-end
-
 module MysqlRepoTest
   extend Crecto::Repo
 
@@ -42,19 +23,19 @@ module SqliteRepoTest
   end
 end
 
-module UriRepoTest
-  extend Crecto::Repo
+# module UriRepoTest
+#   extend Crecto::Repo
 
-  config do |conf|
-    conf.adapter = Crecto::Adapters::Postgres
-    conf.uri = "postgres://username:password@localhost:5432/uri_repo_test"
-  end
-end
+#   config do |conf|
+#     conf.adapter = Crecto::Adapters::Postgres
+#     conf.uri = "postgres://username:password@localhost:5432/uri_repo_test"
+#   end
+# end
 
 describe "repo config" do
-  it "should with with a uri, use the uri for the connection string" do
-    UriRepoTest.config.database_url.should eq "postgres://username:password@localhost:5432/uri_repo_test"
-  end
+  # it "should with with a uri, use the uri for the connection string" do
+  #   UriRepoTest.config.database_url.should eq "postgres://username:password@localhost:5432/uri_repo_test"
+  # end
 
   it "should set the config values for mysql" do
     MysqlRepoTest.config do |conf|
