@@ -3,11 +3,11 @@ module Crecto
     class Config
       property database, username, password, hostname, port, uri,
         initial_pool_size, max_pool_size, max_idle_pool_size, checkout_timeout, retry_attempts, retry_delay,
-        adapter : Crecto::Adapters::Postgres.class | Crecto::Adapters::Mysql.class | Crecto::Adapters::SQLite3.class,
+        adapter : Crecto::Adapters::Mysql.class | Crecto::Adapters::SQLite3.class,
         crecto_db : DB::Database?
 
       def initialize
-        @adapter = Crecto::Adapters::Postgres
+        @adapter = Crecto::Adapters::Mysql
         @uri = ""
         @database = ""
         @username = ""
@@ -74,11 +74,9 @@ module Crecto
       end
 
       private def set_url_protocol(io)
-        if adapter == Crecto::Adapters::Postgres
-          io << "postgres://"
-        elsif adapter == Crecto::Adapters::Mysql
+        if adapter == Crecto::Adapters::Mysql
           io << "mysql://"
-        elsif adapter == Crecto::Adapters::SQLite3
+        else adapter == Crecto::Adapters::SQLite3
           io << "sqlite3://"
         end
       end

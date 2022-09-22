@@ -1,19 +1,19 @@
-module PG
-  struct Numeric
-    def to_f
-    end
-  end
-end
+# module PG
+#   struct Numeric
+#     def to_f
+#     end
+#   end
+# end
 
-require "pg"
+# require "pg"
 require "mysql"
 require "sqlite3"
 require "uuid"
 require "spec"
 require "../src/crecto"
-require "./repo"
+# require "./repo"
 
-alias TestFloat = PG::Numeric | Float64
+alias TestFloat = Float64
 
 Query = Crecto::Repo::Query
 Multi = Crecto::Multi

@@ -56,24 +56,6 @@ describe "repo config" do
     UriRepoTest.config.database_url.should eq "postgres://username:password@localhost:5432/uri_repo_test"
   end
 
-  it "should set the config values for posgres" do
-    PgRepoTest.config do |conf|
-      conf.adapter.should eq Crecto::Adapters::Postgres
-      conf.database.should eq "crecto"
-      conf.username.should eq "fred"
-      conf.password.should eq "123"
-      conf.hostname.should eq "localhost"
-      conf.port.should eq 9999
-      conf.initial_pool_size.should eq 2
-      conf.max_pool_size.should eq 100
-      conf.max_idle_pool_size.should eq 2
-      conf.checkout_timeout.should eq 4.5
-      conf.retry_attempts.should eq 2
-      conf.retry_delay.should eq 0.5
-      conf.database_url.should eq "postgres://fred:123@localhost:9999/crecto?initial_pool_size=2&max_pool_size=100&max_idle_pool_size=2&checkout_timeout=4.5&retry_attempts=2&retry_delay=0.5"
-    end
-  end
-
   it "should set the config values for mysql" do
     MysqlRepoTest.config do |conf|
       conf.adapter.should eq Crecto::Adapters::Mysql
