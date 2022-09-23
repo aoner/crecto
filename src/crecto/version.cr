@@ -1,3 +1,3 @@
 module Crecto
-  VERSION = "0.12.1"
+  VERSION = "0.3.0"
 end

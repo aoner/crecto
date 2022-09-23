@@ -51,7 +51,7 @@ if Repo.config.adapter == Crecto::Adapters::Mysql
     it "should generate get query" do
       user = Repo.insert(User.from_json("{ \"name\":\"lucy\" }"))
       Crecto::Adapters.clear_sql
-      Repo.get(User, user.instance.id)
+      Repo.find(User, user.instance.id)
       check_sql do |sql|
         sql.should eq(["SELECT * FROM users WHERE (id=?) LIMIT 1"])
       end

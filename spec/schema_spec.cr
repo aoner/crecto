@@ -106,7 +106,7 @@ describe Crecto do
         v.make = Vehicle::Make::SEDAN
         id = Repo.insert(v).instance.id
 
-        vehicle = Repo.get!(Vehicle, id)
+        vehicle = Repo.find!(Vehicle, id)
         vehicle.state_string.should eq("RUNNING")
         vehicle.vehicle_type.should eq(Vehicle::Make::SEDAN.value)
       end
@@ -117,7 +117,7 @@ describe Crecto do
         v.make = Vehicle::Make::SEDAN
         id = Repo.insert(v).instance.id
 
-        vehicle = Repo.get!(Vehicle, id)
+        vehicle = Repo.find!(Vehicle, id)
         vehicle.state.should eq(Vehicle::State::RUNNING)
         vehicle.make.should eq(Vehicle::Make::SEDAN)
       end

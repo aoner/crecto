@@ -114,7 +114,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `enum_field` support for [Enum](https://crystal-lang.org/api/0.22.0/Enum.html)s as model fields [@faultyserver](https://github.com/faultyserver)
 - `update_from_hash` method added, for updating records from `HTTP::Params#to_s` (to support crecto-admin)
 - **(breaking change)** added `Repo#get_association`, depreciating `Repo#get(post, :user)` and `Repo#all(user, :posts)` for getting associations
-- Fix `Repo.get` for associations [@faultyserver](https://github.com/faultyserver)
+- Fix `Repo.find` for associations [@faultyserver](https://github.com/faultyserver)
 - Always set `has_many` association values [@faultyserver](https://github.com/faultyserver)
 
 ## [0.5.4] 2017-05-20
@@ -176,7 +176,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.4.0] 2017-02-26
 
-- `Repo.get` now raises `NoResults` error if no record is found
+- `Repo.find` now raises `NoResults` error if no record is found
 - MULTI + TRANSACTIONS!
 
 ## [0.3.5] 2017-02-21

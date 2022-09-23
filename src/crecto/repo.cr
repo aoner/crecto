@@ -99,9 +99,9 @@ module Crecto
     # Return a single nilable insance of *queryable* by primary key with *id*.
     #
     # ```
-    # user = Repo.get(User, 1)
+    # user = Repo.find(User, 1)
     # ```
-    def get(queryable, id)
+    def find(queryable, id)
       q = config.adapter.run(config.get_connection, :get, queryable, id).as(DB::ResultSet)
       results = queryable.from_rs(q)
       results.first if results.any?
@@ -111,10 +111,10 @@ module Crecto
     # Raises `NoResults` error if the record does not exist
     #
     # ```
-    # user = Repo.get(User, 1)
+    # user = Repo.find(User, 1)
     # ```
-    def get!(queryable, id)
-      if result = get(queryable, id)
+    def find!(queryable, id)
+      if result = find(queryable, id)
         result
       else
         raise NoResults.new("No Results")
@@ -126,9 +126,9 @@ module Crecto
     #
     # ```
     # query = Query.preload(:posts)
-    # user = Repo.get(User, 1, query)
+    # user = Repo.find(User, 1, query)
     # ```
-    def get(queryable, id, query : Query)
+    def find(queryable, id, query : Query)
       q = config.adapter.run(config.get_connection, :get, queryable, id).as(DB::ResultSet)
       results = queryable.from_rs(q)
 
@@ -147,10 +147,10 @@ module Crecto
     #
     # ```
     # query = Query.preload(:posts)
-    # user = Repo.get(User, 1, query)
+    # user = Repo.find(User, 1, query)
     # ```
-    def get!(queryable, id, query : Query)
-      if result = get(queryable, id, query)
+    def find!(queryable, id, query : Query)
+      if result = find(queryable, id, query)
         result
       else
         raise NoResults.new("No Results")
@@ -160,19 +160,19 @@ module Crecto
     # Return a single nilable instance of *queryable* using the *opts* param
     #
     # ```
-    # user = Repo.get_by(User, name: "fred", age: 21)
+    # user = Repo.find_by(User, name: "fred", age: 21)
     # ```
-    def get_by(queryable, **opts)
-      get_by(queryable, Query.where(**opts))
+    def find_by(queryable, **opts)
+      find_by(queryable, Query.where(**opts))
     end
 
     # Return a single nilable instance of *queryable* using the *query* param
     # Allows for association preloading
     #
     # ```
-    # user = Repo.get_by(User, Query.where(name: "fred", age: 21))
+    # user = Repo.find_by(User, Query.where(name: "fred", age: 21))
     # ```
-    def get_by(queryable, query)
+    def find_by(queryable, query)
       results = all(queryable, query.limit(1))
       results.first if results.any?
     end
@@ -181,20 +181,20 @@ module Crecto
     # Raises `NoResults` error if the record does not exist
     #
     # ```
-    # user = Repo.get_by(User, name: "fred", age: 21)
+    # user = Repo.find_by(User, name: "fred", age: 21)
     # ```
-    def get_by!(queryable, **opts)
-      get_by!(queryable, Query.where(**opts))
+    def find_by!(queryable, **opts)
+      find_by!(queryable, Query.where(**opts))
     end
 
     # Return a single instance of *queryable* using the *query* param
     # Raises `NoResults` error if the record does not exist
     #
     # ```
-    # user = Repo.get_by(User, Query.where(name: "fred", age: 21))
+    # user = Repo.find_by(User, Query.where(name: "fred", age: 21))
     # ```
-    def get_by!(queryable, query)
-      if result = get_by(queryable, query)
+    def find_by!(queryable, query)
+      if result = find_by(queryable, query)
         result
       else
         raise NoResults.new("No Results")
@@ -204,7 +204,7 @@ module Crecto
     # Return the value of the given association on *queryable_instance*
     #
     # ```
-    # user = Crecto::Repo.get(User, 1)
+    # user = Crecto::Repo.find(User, 1)
     # post = Repo.get_association(user, :post)
     # ```
     def get_association(queryable_instance, association_name : Symbol, query : Query = Query.new)
@@ -225,7 +225,7 @@ module Crecto
     # for `has_many` associations.
     #
     # ```
-    # user = Crecto::Repo.get(User, 1)
+    # user = Crecto::Repo.find(User, 1)
     # post = Repo.get_association!(user, :post)
     # ```
     def get_association!(queryable_instance, association_name : Symbol, query : Query = Query.new)
@@ -783,7 +783,7 @@ module Crecto
       klass_for_association = queryable.klass_for_association(association)
       return if klass_for_association.nil?
       key_for_association = queryable.foreign_key_value_for_association(association, instance)
-      get(klass_for_association, key_for_association, query)
+      find(klass_for_association, key_for_association, query)
     end
   end
 end

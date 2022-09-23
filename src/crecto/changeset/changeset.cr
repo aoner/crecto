@@ -62,18 +62,6 @@ module Crecto
         return false unless UNIQUE_FIELDS[@class_key]?
         message = e.message.to_s
 
-        # Postgres
-        if message.starts_with?("duplicate key value")
-          UNIQUE_FIELDS[@class_key].each do |constraint_field|
-            if message.includes?("unique constraint \"#{queryable_instance.class.table_name}_#{constraint_field}_key\"")
-              self.add_error(constraint_field.to_s, message)
-              return true
-            end
-          end
-          self.add_error("_base", message)
-          return true
-        end
-
         # Mysql
         if message.starts_with?("Duplicate")
           UNIQUE_FIELDS[@class_key].each do |constraint_field|

@@ -1,11 +1,3 @@
-# module PG
-#   struct Numeric
-#     def to_f
-#     end
-#   end
-# end
-
-# require "pg"
 require "mysql"
 require "sqlite3"
 require "uuid"

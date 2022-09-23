@@ -20,7 +20,7 @@ describe Crecto do
         # x = Repo.config.adapter == Crecto::Adapters::Postgres ? "$1" : "?"
         x = "?"
         Repo.raw_exec("INSERT INTO users (name) VALUES (#{x})", name)
-        user = Repo.get_by!(User, name: name)
+        user = Repo.find_by!(User, name: name)
         user.should_not be_nil
       end
     end
@@ -509,7 +509,7 @@ describe Crecto do
       end
     end
 
-    describe "#get" do
+    describe "#find" do
       it "should return a user" do
         now = Time.local
 
@@ -518,39 +518,39 @@ describe Crecto do
         user.some_date = now
         changeset = Repo.insert(user)
         id = changeset.instance.id
-        user = Repo.get(User, id)
+        user = Repo.find(User, id)
         user.is_a?(User).should eq(true)
         user.not_nil!.id.should eq(id)
         user.not_nil!.some_date.as(Time).to_local.to_unix_ms.should be_close(now.to_unix_ms, 2000)
       end
 
       it "should return nil if not in db" do
-        user = Repo.get(User, 99999)
+        user = Repo.find(User, 99999)
         user.nil?.should eq true
       end
     end
 
-    describe "#get!" do
+    describe "#find!" do
       it "should return a user" do
         user = quick_create_user("lkjfl3kj3lj")
-        user = Repo.get!(User, user.id)
+        user = Repo.find!(User, user.id)
         user.name.should eq "lkjfl3kj3lj"
       end
 
       it "should raise NoResults error if not in db" do
         expect_raises(Crecto::NoResults) do
-          user = Repo.get!(User, 99999)
+          user = Repo.find!(User, 99999)
         end
       end
 
       it "should work with a query" do
         user = quick_create_user("get_with_a_query")
-        user = Repo.get!(User, user.id, Query.where(name: "get_with_a_query"))
+        user = Repo.find!(User, user.id, Query.where(name: "get_with_a_query"))
         user.name.should eq "get_with_a_query"
       end
     end
 
-    describe "#get_by" do
+    describe "#find_by" do
       context "with opts" do
         it "should return a row" do
           user = User.new
@@ -558,13 +558,13 @@ describe Crecto do
           changeset = Repo.insert(user)
           id = changeset.instance.id
 
-          user = Repo.get_by(User, name: "fridge", id: id).as(User)
+          user = Repo.find_by(User, name: "fridge", id: id).as(User)
           user.id.should eq(id)
           user.name.should eq("fridge")
         end
 
         it "should not return a row" do
-          user = Repo.get_by(User, id: 99999)
+          user = Repo.find_by(User, id: 99999)
           user.nil?.should be_true
         end
       end
@@ -576,19 +576,19 @@ describe Crecto do
           changeset = Repo.insert(user)
           id = changeset.instance.id
 
-          user = Repo.get_by(User, Query.where(name: "fridge", id: id)).as(User)
+          user = Repo.find_by(User, Query.where(name: "fridge", id: id)).as(User)
           user.id.should eq(id)
           user.name.should eq("fridge")
         end
 
         it "should not return a row" do
-          user = Repo.get_by(User, Query.where(id: 99999))
+          user = Repo.find_by(User, Query.where(id: 99999))
           user.nil?.should be_true
         end
       end
     end
 
-    describe "#get_by!" do
+    describe "#find_by!" do
       context "with opts" do
         it "should return a row" do
           user = User.new
@@ -596,14 +596,14 @@ describe Crecto do
           changeset = Repo.insert(user)
           id = changeset.instance.id
 
-          user = Repo.get_by!(User, name: "fridge", id: id)
+          user = Repo.find_by!(User, name: "fridge", id: id)
           user.id.should eq(id)
           user.name.should eq("fridge")
         end
 
         it "should not return a row" do
           expect_raises(Crecto::NoResults) do
-            user = Repo.get_by!(User, id: 99999)
+            user = Repo.find_by!(User, id: 99999)
           end
         end
 
@@ -614,7 +614,7 @@ describe Crecto do
           post = Post.new
           post.user = user
           id = Repo.insert!(post).instance.id
-          post = Repo.get_by!(Post, Query.where(id: id).preload(:user))
+          post = Repo.find_by!(Post, Query.where(id: id).preload(:user))
           post.user.id.should eq(user.id)
         end
       end
@@ -626,14 +626,14 @@ describe Crecto do
           changeset = Repo.insert(user)
           id = changeset.instance.id
 
-          user = Repo.get_by!(User, Query.where(name: "fridge", id: id))
+          user = Repo.find_by!(User, Query.where(name: "fridge", id: id))
           user.id.should eq(id)
           user.name.should eq("fridge")
         end
 
         it "should not return a row" do
           expect_raises(Crecto::NoResults) do
-            user = Repo.get_by!(User, Query.where(id: 99999))
+            user = Repo.find_by!(User, Query.where(id: 99999))
           end
         end
       end
@@ -968,8 +968,8 @@ describe Crecto do
         Repo.all(Thing, Query.where(user_different_defaults_id: u.user_id)).size.should eq 2
         Repo.delete(u)
         Repo.all(Thing, Query.where(user_different_defaults_id: u.user_id)).size.should eq 0
-        Repo.get(Thing, up1.id).not_nil!.user_different_defaults_id.should eq nil
-        Repo.get(Thing, up2.id).not_nil!.user_different_defaults_id.should eq nil
+        Repo.find(Thing, up1.id).not_nil!.user_different_defaults_id.should eq nil
+        Repo.find(Thing, up2.id).not_nil!.user_different_defaults_id.should eq nil
       end
 
       it "should delete join_through destroy dependents" do
@@ -985,7 +985,7 @@ describe Crecto do
 
         Repo.all(UserProject, Query.where(user_id: user.id)).size.should eq 2
         Repo.delete(user)
-        Repo.get(Project, other_p.id).should_not be_nil # should not delete un-related
+        Repo.find(Project, other_p.id).should_not be_nil # should not delete un-related
         Repo.all(UserProject, Query.where(user_id: user.id)).size.should eq 0
       end
     end
@@ -1052,7 +1052,7 @@ describe Crecto do
         end
 
         # should not update the last
-        user = Repo.get!(User, id3)
+        user = Repo.find!(User, id3)
         user.things.should eq(2334234)
       end
     end
@@ -1136,7 +1136,7 @@ describe Crecto do
         thing.user = user
         thing = Repo.insert(thing).instance
 
-        thing = Repo.get!(Thing, thing.id, Query.preload(:user))
+        thing = Repo.find!(Thing, thing.id, Query.preload(:user))
         thing.user.should_not be_nil
       end
     end
@@ -1214,7 +1214,7 @@ describe Crecto do
         user_project.project = project
         user_project = Repo.insert(user_project).instance
 
-        user = Repo.get!(User, user.id, Query.preload(:projects))
+        user = Repo.find!(User, user.id, Query.preload(:projects))
         user.projects[0].id.should eq project.id
       end
 
@@ -1443,7 +1443,7 @@ describe Crecto do
 
         Repo.delete_all(User)
 
-        Repo.get(Project, other_p.id).should_not be_nil # should not delete un-related
+        Repo.find(Project, other_p.id).should_not be_nil # should not delete un-related
 
         Repo.all(UserProject, Query.where(user_id: [u1.id, u2.id])).size.should eq 0
         Repo.all(Project, Query.where(id: [p1.id, p2.id, p3.id, p4.id])).size.should eq 0
@@ -1465,10 +1465,10 @@ describe Crecto do
         Repo.all(Thing, Query.where(user_different_defaults_id: [u.user_id, u2.user_id])).size.should eq 4
         Repo.delete_all(UserDifferentDefaults)
         Repo.all(Thing, Query.where(user_different_defaults_id: [u.user_id, u2.user_id])).size.should eq 0
-        Repo.get!(Thing, up1.id).user_different_defaults_id.should eq nil
-        Repo.get!(Thing, up2.id).user_different_defaults_id.should eq nil
-        Repo.get!(Thing, up3.id).user_different_defaults_id.should eq nil
-        Repo.get!(Thing, up4.id).user_different_defaults_id.should eq nil
+        Repo.find!(Thing, up1.id).user_different_defaults_id.should eq nil
+        Repo.find!(Thing, up2.id).user_different_defaults_id.should eq nil
+        Repo.find!(Thing, up3.id).user_different_defaults_id.should eq nil
+        Repo.find!(Thing, up4.id).user_different_defaults_id.should eq nil
       end
 
       it "should remove all records" do

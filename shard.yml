@@ -2,7 +2,7 @@ name: crecto
 version: 0.3.0
 
 authors:
-  - aoner <shnick@gmail.com>
+  - aoner <aoner@gmail.com>
 
 license: MIT
 
@@ -11,6 +11,7 @@ crystal: "~> 1.5.0"
 dependencies:
   db:
     github: crystal-lang/crystal-db
+    version: ~> 0.11.0
 
 development_dependencies:
   mysql:
