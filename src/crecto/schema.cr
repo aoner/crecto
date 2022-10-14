@@ -154,10 +154,10 @@ module Crecto
       {% json_fields = [] of String %}
 
       {% mapping = CRECTO_FIELDS.map do |field|
-           json_fields.push(field[:name]) if field[:type].id.stringify == "Json"
-           field_type = field[:type].id.stringify
-           "#{field[:name].id.stringify}: {type: #{field_type.id}, nilable: true}"
-         end %}
+        json_fields.push(field[:name]) if field[:type].id.stringify == "Json"
+        field_type = field[:type].id.stringify
+        "#{field[:name].id.stringify}: {type: #{field_type.id}, nilable: true}"
+      end %}
 
       {% if CRECTO_USE_PRIMARY_KEY %}
         {% mapping.push(CRECTO_PRIMARY_KEY_FIELD.id.stringify + ": {type: #{CRECTO_PRIMARY_KEY_FIELD_TYPE.id}, nilable: true}") %}

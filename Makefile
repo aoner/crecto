@@ -6,11 +6,12 @@
 ##   $ make spec
 
 migrate:
-ifndef PG_URL
-	$(error PG_URL is undefined)
-else
-	psql -q $(PG_URL) < ./spec/migrations/pg_migrations.sql
-endif
+# sqlite3 ./crecto_test.db < spec/migrations/sqlite3_migrations.sql
+# ifndef PG_URL
+# 	$(error PG_URL is undefined)
+# else
+# 	psql -q $(PG_URL) < ./spec/migrations/pg_migrations.sql
+# endif
 
 spec:
 	crystal spec

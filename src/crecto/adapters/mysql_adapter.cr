@@ -28,7 +28,7 @@ module Crecto
         results
       end
 
-      private def self.get(conn, queryable, id)
+      private def self.find(conn, queryable, id)
         q = String.build do |builder|
           builder << "SELECT * FROM " << queryable.table_name
           builder << " WHERE (" << queryable.primary_key_field << "=?)"

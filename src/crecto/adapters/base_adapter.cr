@@ -32,8 +32,8 @@ module Crecto
       #
       def run(conn : DB::Database | DB::Transaction, operation : Symbol, queryable, id : PkeyValue)
         case operation
-        when :get
-          get(conn, queryable, id)
+        when :find
+          find(conn, queryable, id)
         else
           raise Exception.new("invalid operation passed to run")
         end
@@ -101,7 +101,8 @@ module Crecto
         conn.connection.exec(query_string)
       end
 
-      private def get(conn, queryable, id)
+      # get => find
+      private def find(conn, queryable, id)
         q = String.build do |builder|
           builder <<
             "SELECT * FROM " << queryable.table_name <<

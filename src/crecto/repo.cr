@@ -102,7 +102,7 @@ module Crecto
     # user = Repo.find(User, 1)
     # ```
     def find(queryable, id)
-      q = config.adapter.run(config.get_connection, :get, queryable, id).as(DB::ResultSet)
+      q = config.adapter.run(config.get_connection, :find, queryable, id).as(DB::ResultSet)
       results = queryable.from_rs(q)
       results.first if results.any?
     end
@@ -129,7 +129,7 @@ module Crecto
     # user = Repo.find(User, 1, query)
     # ```
     def find(queryable, id, query : Query)
-      q = config.adapter.run(config.get_connection, :get, queryable, id).as(DB::ResultSet)
+      q = config.adapter.run(config.get_connection, :find, queryable, id).as(DB::ResultSet)
       results = queryable.from_rs(q)
 
       if results.any?
