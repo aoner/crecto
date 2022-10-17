@@ -6,7 +6,7 @@ authors:
 
 license: MIT
 
-crystal: "~> 1.5.0"
+crystal: "~> 1.6.0"
 
 dependencies:
   db:
